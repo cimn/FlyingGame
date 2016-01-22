@@ -9,4 +9,4 @@ runtime/
 .idea/
 
 # Ignore files built by Cocos Code IDE
-.debug.log
+debug.log
