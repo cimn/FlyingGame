@@ -1,3 +1,5 @@
+local Heart = require("app.objects.Heart")
+
 BackgroundLayer = class("BackgroundLayer", function()
 	return display.newLayer()
 end)
@@ -9,9 +11,23 @@ function BackgroundLayer:ctor()
 	self.tiledMapBg = {}
 
 	self:createBackgrounds()
+	self:startGame()
+	self:addHeart()
 
-	self:addNodeEventListener(cc.NODE_ENTER_FRAME_EVENT, handler(self, self.scrollBackgrounds))
-	self:scheduleUpdate()
+	local width = self.map:getContentSize().width
+	local height1 = self.map:getContentSize().height * 9.5 / 10
+	local height2 = self.map:getContentSize().height * 2 / 16
+
+	local sky = display.newNode()
+	local bodyTop = cc.PhysicsBody:createEdgeSegment(cc.p(0, height1), cc.p(width, height1))
+	sky:setPhysicsBody(bodyTop)
+	self:addChild(sky)
+
+	local ground = display.newNode()
+	local bodyBottom = cc.PhysicsBody:createEdgeSegment(cc.p(0, height2), cc.p(width, height2))
+	ground:setPhysicsBody(bodyBottom)
+	self:addChild(ground)
+
 end
 
 function BackgroundLayer:createBackgrounds()	
@@ -75,6 +91,36 @@ function BackgroundLayer:scrollBackgrounds(dt)
 
     local x5 = self.map:getPositionX() - 120 * dt
     self.map:setPositionX(x5)
+end
+
+function BackgroundLayer:startGame()
+	self:addNodeEventListener(cc.NODE_ENTER_FRAME_EVENT, handler(self, self.scrollBackgrounds))
+    self:scheduleUpdate()
+end
+
+function BackgroundLayer:addHeart()
+	-- 1
+	local objects = self.map:getObjectGroup("heart"):getObjects()
+	-- 2
+	local dict = nil
+	local i = 0
+	local len = table.getn(objects)
+	-- 3
+	for i = 0, len - 1, 1 do
+		dict = objects[i + 1]
+		-- 4
+		if dict == nil then
+			break
+		end
+		-- 5 取出相应的属性值，即对象坐标。因为对象组中的对象在TMX 文件中是以键值对的形式存在的，所以我们可以通过它的 key 得到相应的 value
+		local key = "x"
+		local x = dict["x"]
+		local key = "y"
+		local y = dict["y"]
+		-- 6
+		local coinSprite1 = Heart.new(x, y)
+		self.map:addChild(coinSprite1)
+	end
 end
 
 return BackgroundLayer
