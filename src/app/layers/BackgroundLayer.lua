@@ -1,4 +1,6 @@
 local Heart = require("app.objects.Heart")
+local Airship = require("app.objects.Airship")
+local Bird = require("app.objects.Bird")
 
 BackgroundLayer = class("BackgroundLayer", function()
 	return display.newLayer()
@@ -12,7 +14,9 @@ function BackgroundLayer:ctor()
 
 	self:createBackgrounds()
 	self:startGame()
-	self:addHeart()
+	self:addBody("heart", Heart)
+    self:addBody("airship", Airship)
+    self:addBody("bird", Bird)
 
 	local width = self.map:getContentSize().width
 	local height1 = self.map:getContentSize().height * 9.5 / 10
@@ -98,9 +102,9 @@ function BackgroundLayer:startGame()
     self:scheduleUpdate()
 end
 
-function BackgroundLayer:addHeart()
+function BackgroundLayer:addBody(objectGroupName,class)
 	-- 1
-	local objects = self.map:getObjectGroup("heart"):getObjects()
+	local objects = self.map:getObjectGroup(objectGroupName):getObjects()
 	-- 2
 	local dict = nil
 	local i = 0
@@ -118,8 +122,8 @@ function BackgroundLayer:addHeart()
 		local key = "y"
 		local y = dict["y"]
 		-- 6
-		local coinSprite1 = Heart.new(x, y)
-		self.map:addChild(coinSprite1)
+		local sprite = class.new(x, y)
+		self.map:addChild(sprite)
 	end
 end
 
