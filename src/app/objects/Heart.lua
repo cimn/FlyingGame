@@ -12,6 +12,12 @@ function Heart:ctor(x, y)
 	self:getPhysicsBody():setGravityEnable(false)
 
 	self:setPosition(x, y)
+
+	heartBody:setCategoryBitmask(0x0001)
+	heartBody:setContactTestBitmask(0x0100)
+	heartBody:setCollisionBitmask(0x0001)
+
+	self:setTag(HEART_TAG)
 end
 
 return Heart

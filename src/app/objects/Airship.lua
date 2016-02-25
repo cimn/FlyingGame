@@ -20,6 +20,12 @@ function Airship:ctor(x, y)
     local move2 = cc.MoveBy:create(3, cc.p(0, -airshipSize.height / 2))
     local SequenceAction = cc.Sequence:create( move1, move2 )
     transition.execute(self, cc.RepeatForever:create( SequenceAction ))
+
+    airshipBody:setCategoryBitmask(0x0100)
+    airshipBody:setContactTestBitmask(0x0100)
+    airshipBody:setCollisionBitmask(0x1000)
+
+    self:setTag(AIRSHIP_TAG)
 end
 
 return Airship

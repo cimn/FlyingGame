@@ -32,6 +32,7 @@ function MainScene:ctor()
 end
 
 function MainScene:onEnter()
+    audio.playMusic("sound/background.mp3", true)
 end
 
 function MainScene:onExit()

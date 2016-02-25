@@ -20,5 +20,11 @@
     local animate = cc.Animate:create(animation)
 
     self:runAction(cc.RepeatForever:create(animate))
+
+    birdBody:setCategoryBitmask(0x0010)
+    birdBody:setContactTestBitmask(0x0010)
+    birdBody:setCollisionBitmask(0x1000)
+
+    self:setTag(BIRD_TAG)
 end
 return Bird

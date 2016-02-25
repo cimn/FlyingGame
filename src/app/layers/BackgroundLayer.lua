@@ -11,9 +11,10 @@ function BackgroundLayer:ctor()
 	self.distanceBg = {}
 	self.nearbyBg = {}
 	self.tiledMapBg = {}
+	self.bird = {}
 
 	self:createBackgrounds()
-	self:startGame()
+	-- self:startGame()
 	self:addBody("heart", Heart)
     self:addBody("airship", Airship)
     self:addBody("bird", Bird)
@@ -24,11 +25,22 @@ function BackgroundLayer:ctor()
 
 	local sky = display.newNode()
 	local bodyTop = cc.PhysicsBody:createEdgeSegment(cc.p(0, height1), cc.p(width, height1))
+
+	bodyTop:setCategoryBitmask(0x1000)
+    bodyTop:setContactTestBitmask(0x0000)
+    bodyTop:setCollisionBitmask(0x0001)
+
 	sky:setPhysicsBody(bodyTop)
 	self:addChild(sky)
 
 	local ground = display.newNode()
 	local bodyBottom = cc.PhysicsBody:createEdgeSegment(cc.p(0, height2), cc.p(width, height2))
+
+	bodyBottom:setCategoryBitmask(0x1000)
+    bodyBottom:setContactTestBitmask(0x0001)
+    bodyBottom:setCollisionBitmask(0x0011)
+
+	ground:setTag(GROUND_TAG)
 	ground:setPhysicsBody(bodyBottom)
 	self:addChild(ground)
 
@@ -60,6 +72,10 @@ function BackgroundLayer:createBackgrounds()
 
 		table.insert(self.nearbyBg, bg3)
 		table.insert(self.nearbyBg, bg4)
+
+		local emitter = cc.ParticleSystemQuad:create("particles/dirt.plist")
+		emitter:setPosition(display.cx, display.top)
+		self:addChild(emitter, -3)
 
 	self.map = cc.TMXTiledMap:create("image/map.tmx")
 		:align(display.BOTTOM_LEFT, display.left, display.bottom)
@@ -95,6 +111,8 @@ function BackgroundLayer:scrollBackgrounds(dt)
 
     local x5 = self.map:getPositionX() - 120 * dt
     self.map:setPositionX(x5)
+
+    self:addVelocityToBird()
 end
 
 function BackgroundLayer:startGame()
@@ -124,7 +142,33 @@ function BackgroundLayer:addBody(objectGroupName,class)
 		-- 6
 		local sprite = class.new(x, y)
 		self.map:addChild(sprite)
+
+		if objectGroupName == "bird" then
+        	table.insert(self.bird, sprite)
+        end
 	end
+end
+
+function BackgroundLayer:addVelocityToBird()
+    local  dict = nil
+    local  i = 0
+    local  len = table.getn(self.bird)
+
+    for i = 0, len-1, 1 do
+        dict = self.bird[i + 1]
+        if dict == nil  then
+            break
+        end
+
+        local x = dict:getPositionX()
+        if x <= display.width  - self.map:getPositionX() then
+            if dict:getPhysicsBody():getVelocity().x == 0 then
+                dict:getPhysicsBody():setVelocity(cc.p(-70, math.random(-40, 40)))
+            else
+                table.remove(self.bird, i + 1)
+            end
+        end
+    end
 end
 
 return BackgroundLayer

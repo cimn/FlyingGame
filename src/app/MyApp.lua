@@ -4,7 +4,6 @@ require("cocos.init")
 require("framework.init")
 require("app.layers.BackgroundLayer")
 require("app.objects.Player")
-require("app.objects.Heart")
 
 local MyApp = class("MyApp", cc.mvc.AppBase)
 
@@ -18,6 +17,13 @@ function MyApp:run()
     cc.Director:getInstance():setContentScaleFactor(640 / CONFIG_SCREEN_HEIGHT)
 
     display.addSpriteFrames("image/player.plist", "image/player.pvr.ccz")
+
+    math.randomseed(os.time())
+    audio.preloadMusic("sound/background.mp3") 
+    audio.preloadSound("sound/button.wav")
+    audio.preloadSound("sound/ground.mp3")
+    audio.preloadSound("sound/heart.mp3")
+    audio.preloadSound("sound/hit.mp3")
 
     self:enterScene("MainScene")
 end
